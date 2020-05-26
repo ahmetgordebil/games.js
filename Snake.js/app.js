@@ -51,6 +51,7 @@ let score = 0;
 let d;
 
 document.addEventListener("keydown", direction);
+
 function direction(event) {
   if (event.keyCode == 37 && d != "RIGHT") {
     d = "LEFT";
@@ -91,21 +92,23 @@ function draw() {
     ctx.strokeRect(snake[i].x, snake[i].y, box, box);
   }
 
+  ctx.drawImage(foodImg, food.x, food.y);
+
   //yılan başı eski pozisyon:
   let snakeX = snake[0].x;
   let snakeY = snake[0].y;
-  ctx.drawImage(foodImg, food.x, food.y);
 
-  //Yeni baş eklenir:
-  let newHead = {
-    x: snakeX,
-    y: snakeY,
-  };
+  //Yönlendirme:
+  if (d == "LEFT") snakeX -= box;
+  if (d == "UP") snakeY -= box;
+  if (d == "RIGHT") snakeX += box;
+  if (d == "DOWN") snakeY += box;
+
   //yemek yılanın boyunu uzatsın, yeni yemek oluştursun:
   if (snakeX == food.x && snakeY == food.y) {
     score++;
     eat.play();
-    let food = {
+    food = {
       x: Math.floor(Math.random() * 17 + 1) * box,
       y: Math.floor(Math.random() * 15 + 3) * box,
     };
@@ -114,23 +117,25 @@ function draw() {
     snake.pop();
   }
 
+  //Yeni baş eklenir:
+  let newHead = {
+    x: snakeX,
+    y: snakeY,
+  };
+
   //Gameover:
 
   if (
-    snakeX < 2 * box ||
-    snakeX > 16 * box ||
-    snakeY < 4 * box ||
-    snakeY > 16 * box ||
+    snakeX < box ||
+    snakeX > 17 * box ||
+    snakeY < 3 * box ||
+    snakeY > 17 * box ||
     collision(newHead, snake)
   ) {
     clearInterval(game);
     dead.play();
   }
-  //Yönlendirme:
-  if (d == "LEFT") snakeX -= box;
-  if (d == "UP") snakeY -= box;
-  if (d == "RIGHT") snakeX += box;
-  if (d == "DOWN") snakeY += box;
+
   snake.unshift(newHead);
 
   ctx.fillStyle = "white";
